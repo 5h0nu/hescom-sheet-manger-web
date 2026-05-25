@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HESCOM Admin Portal</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #6366F1;
+            --primary-dark: #4F46E5;
+            --accent: #EC4899;
+            --bg-start: #0F172A;
+            --bg-end: #1E1B4B;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --error: #EF4444;
+            --success: #10B981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphic Container */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: all 0.3s ease;
+        }
+
+        /* Login Layout */
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .logo-area {
+            margin-bottom: 24px;
+        }
+
+        .logo-icon {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            text-shadow: 0 0 16px rgba(99, 102, 241, 0.4);
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 16px;
+            top: 36px;
+            color: var(--text-secondary);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #6366F1 0%, #A855F7 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .error-msg {
+            color: var(--error);
+            font-size: 14px;
+            margin-top: 16px;
+            display: none;
+            font-weight: 500;
+        }
+
+        /* Dashboard Layout */
+        .dashboard-container {
+            width: 100%;
+            max-width: 1100px;
+            padding: 32px;
+            display: none;
+            flex-direction: column;
+            align-self: flex-start;
+            margin: 40px auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6366F1 0%, #EC4899 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        .user-email {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1.8fr;
+            gap: 32px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            body {
+                align-items: flex-start;
+            }
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* Upload Card */
+        .upload-card {
+            padding: 24px;
+        }
+
+        .file-dropzone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 32px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 20px;
+            background: rgba(15, 23, 42, 0.3);
+        }
+
+        .file-dropzone:hover, .file-dropzone.dragover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .file-dropzone i {
+            font-size: 32px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .file-dropzone p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .file-dropzone span {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .selected-file-info {
+            display: none;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 13px;
+            margin-top: 12px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .selected-file-info button {
+            background: transparent;
+            border: none;
+            color: var(--error);
+            cursor: pointer;
+        }
+
+        /* Progress Area */
+        .progress-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .progress-bar-wrapper {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #6366F1 0%, #A855F7 100%);
+            width: 0%;
+            height: 100%;
+            transition: width 0.1s linear;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Sheets List Card */
+        .sheets-card {
+            padding: 24px;
+        }
+
+        .sheets-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .sheet-item {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .sheet-item:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        .sheet-info h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .sheet-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .sheet-meta span {
+            margin-right: 12px;
+        }
+
+        .sheet-delete-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .sheet-delete-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN WRAPPER -->
+    <div id="loginSection" class="glass-card login-wrapper">
+        <div class="logo-area">
+            <i class="fa-solid fa-cloud-arrow-up logo-icon"></i>
+            <h2>HESCOM Portal</h2>
+            <div class="subtitle">Admin Spreadsheet Upload Service</div>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <label for="emailInput">Email Address</label>
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" id="emailInput" class="input-field" placeholder="admin@hescom.com" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="passwordInput">Password</label>
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="passwordInput" class="input-field" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn" id="loginBtn">Sign In to Dashboard</button>
+            <div id="errorMsg" class="error-msg"></div>
+        </form>
+    </div>
+
+    <!-- DASHBOARD CONTAINER -->
+    <div id="dashboardSection" class="glass-card dashboard-container">
+        <div class="dashboard-header">
+            <div>
+                <h2>HESCOM Importer</h2>
+                <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Convert and Sync Excel sheets to Realtime Database</div>
+            </div>
+            <div class="user-badge">
+                <div class="user-avatar" id="avatarText">A</div>
+                <div>
+                    <div class="user-email" id="userNameText">admin@hescom.com</div>
+                    <div style="font-size: 11px; color: var(--accent); font-weight: 600; text-transform: uppercase; margin-top: 2px;">Administrator</div>
+                </div>
+                <button class="btn-outline" onclick="handleLogout()" style="margin-left: 12dp;">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Left Side: Upload Spreadsheet Form -->
+            <div class="glass-card upload-card">
+                <h3 class="section-title"><i class="fa-solid fa-file-excel"></i> Import New Sheet</h3>
+                
+                <div class="input-group">
+                    <label for="sheetTitleInput">Spreadsheet Title</label>
+                    <i class="fa-solid fa-heading" style="top: 36px;"></i>
+                    <input type="text" id="sheetTitleInput" class="input-field" style="padding-left: 36px;" placeholder="Hubli Division Data" required>
+                </div>
+
+                <div class="file-dropzone" onclick="document.getElementById('fileInput').click()" id="dropzone">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p>Drag and drop your Excel file here, or <span>browse</span></p>
+                    <p style="font-size: 11px; margin-top: 6px; color: var(--text-secondary);">Supports .xlsx and .xls formats</p>
+                </div>
+                <input type="file" id="fileInput" accept=".xlsx, .xls" onchange="handleFileSelect(event)">
+
+                <div class="selected-file-info" id="fileInfo">
+                    <span><i class="fa-solid fa-file-excel" style="color: var(--success); margin-right: 8px;"></i><span id="fileNameDisplay">data.xlsx</span></span>
+                    <button type="button" onclick="clearFileSelection()"><i class="fa-solid fa-trash"></i></button>
+                </div>
+
+                <button class="btn" onclick="startExcelImport()" id="importBtn" style="margin-top: 24px;">
+                    <i class="fa-solid fa-circle-play" style="margin-right: 8px;"></i> Upload & Process Sheet
+                </button>
+
+                <!-- Progress Meter -->
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progressStatus">Uploading...</span>
+                        <span id="progressPercentage">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Recent Sheets list -->
+            <div class="glass-card sheets-card">
+                <h3 class="section-title"><i class="fa-solid fa-table-list"></i> Database Sheets</h3>
+                
+                <div class="sheets-list" id="sheetsList">
+                    <div style="text-align: center; color: var(--text-secondary); padding: 40px 0;">
+                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 12px;"></i>
+                        <p>Syncing spreadsheets list...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase App SDK (compat package) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <!-- SheetJS for Browser Excel Parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <script>
+        // HESCOM Firebase Configuration (Extracted from Android project context)
+        const firebaseConfig = {
+            apiKey: "AIzaSyC5wEujgm0_cy3jVOnfze5K7CCCUk-uWJo",
+            authDomain: "office-4683e.firebaseapp.com",
+            databaseURL: "https://office-4683e-default-rtdb.firebaseio.com",
+            projectId: "office-4683e",
+            storageBucket: "office-4683e.firebasestorage.app",
+            messagingSenderId: "229291993112"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        let selectedFile = null;
+
+        // Monitor Auth state changes
+        auth.onAuthStateChanged(user => {
+            const loginSection = document.getElementById('loginSection');
+            const dashboardSection = document.getElementById('dashboardSection');
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (user) {
+                // Fetch user data node to confirm role
+                database.ref('users/' + user.uid).once('value').then(snapshot => {
+                    const data = snapshot.val();
+                    if (!data) {
+                        showLoginError("Account profile data not found.");
+                        auth.signOut();
+                        return;
+                    }
+
+                    if (data.banned) {
+                        showLoginError("Your account has been banned.");
+                        auth.signOut();
+                        return;
+                    }
+
+                    if (data.role !== 'admin') {
+                        showLoginError("Access denied. You are not an admin.");
+                        auth.signOut();
+                        return;
+                    }
+
+                    // Logged in as Admin
+                    document.getElementById('userNameText').innerText = user.email;
+                    document.getElementById('avatarText').innerText = user.email.substring(0, 1).toUpperCase();
+                    
+                    loginSection.style.display = 'none';
+                    dashboardSection.style.display = 'flex';
+                    errorMsg.style.display = 'none';
+
+                    // Load Sheets List
+                    syncSheetsList();
+                }).catch(err => {
+                    showLoginError("Profile validation failed: " + err.message);
+                    auth.signOut();
+                });
+            } else {
+                loginSection.style.display = 'block';
+                dashboardSection.style.display = 'none';
+            }
+        });
+
+        function showLoginError(msg) {
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.innerText = msg;
+            errorMsg.style.display = 'block';
+        }
+
+        // Handle Login Submission
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('emailInput').value.trim();
+            const password = document.getElementById('passwordInput').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMsg = document.getElementById('errorMsg');
+
+            loginBtn.innerText = "Authenticating...";
+            loginBtn.disabled = true;
+            errorMsg.style.display = 'none';
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(userCredential => {
+                    loginBtn.innerText = "Sign In to Dashboard";
+                    loginBtn.disabled = false;
+                })
+                .catch(error => {
+                    loginBtn.innerText = "Sign In to Dashboard";
+                    loginBtn.disabled = false;
+                    showLoginError(error.message);
+                });
+        }
+
+        // Handle Sign Out
+        function handleLogout() {
+            auth.signOut().then(() => {
+                document.getElementById('loginForm').reset();
+            });
+        }
+
+        // Drag & Drop event bindings
+        const dropzone = document.getElementById('dropzone');
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, e => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, e => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+            }, false);
+        });
+
+        dropzone.addEventListener('drop', e => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                setFileSelection(files[0]);
+            }
+        });
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                setFileSelection(files[0]);
+            }
+        }
+
+        function setFileSelection(file) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (ext !== 'xlsx' && ext !== 'xls') {
+                alert("Please select a valid Excel file (.xlsx or .xls)");
+                return;
+            }
+            selectedFile = file;
+            document.getElementById('fileNameDisplay').innerText = file.name;
+            document.getElementById('fileInfo').style.display = 'flex';
+        }
+
+        function clearFileSelection() {
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileInfo').style.display = 'none';
+        }
+
+        // Parse and Upload excel sheet to Firebase Realtime Database
+        function startExcelImport() {
+            const sheetTitle = document.getElementById('sheetTitleInput').value.trim();
+            if (!sheetTitle) {
+                alert("Please enter a title for the spreadsheet.");
+                return;
+            }
+
+            if (!selectedFile) {
+                alert("Please choose an Excel file to upload.");
+                return;
+            }
+
+            const importBtn = document.getElementById('importBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressStatus = document.getElementById('progressStatus');
+            const progressPercentage = document.getElementById('progressPercentage');
+
+            // Show progress indicator
+            importBtn.disabled = true;
+            progressContainer.style.display = 'block';
+            updateProgress(10, "Reading Excel File...");
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    updateProgress(30, "Parsing Spreadsheet Rows...");
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array', cellDates: true});
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // Parse raw arrays
+                    const rows = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                    if (rows.length <= 1) {
+                        throw new Error("Excel sheet is empty or has no header row.");
+                    }
+
+                    updateProgress(50, "Mapping Columns...");
+                    // Parse Headers (Row 0)
+                    const headerRow = rows[0];
+                    const headerMap = {};
+                    for (let c = 0; c < headerRow.length; c++) {
+                        const cellValue = String(headerRow[c] || '').trim().toLowerCase();
+                        if (cellValue.includes("rr")) headerMap["rrNo"] = c;
+                        else if (cellValue.includes("con")) headerMap["conId"] = c;
+                        else if (cellValue.includes("mr") || cellValue.includes("gvp")) headerMap["mrGvpName"] = c;
+                        else if (cellValue.includes("area") || cellValue.includes("tc")) headerMap["tcAreaName"] = c;
+                        else if (cellValue.includes("customer") || cellValue.includes("name")) headerMap["customerName"] = c;
+                        else if (cellValue.includes("tariff")) headerMap["tariff"] = c;
+                        else if (cellValue.includes("phone")) headerMap["phoneNo"] = c;
+                        else if (cellValue.includes("status")) headerMap["status"] = c;
+                        else if (cellValue.includes("date") || cellValue.includes("service")) headerMap["serviceDate"] = c;
+                        else if (cellValue.includes("pay") || cellValue.includes("online") || cellValue.includes("link") || cellValue.includes("url")) headerMap["onlinePayUrl"] = c;
+                    }
+
+                    updateProgress(70, "Preparing Database Payload...");
+
+                    const newSheetRef = database.ref('sheets').push();
+                    const newSheetId = newSheetRef.key;
+                    
+                    // Date Formatter: "May 25, 2026"
+                    const options = { month: 'short', day: '2-digit', year: 'numeric' };
+                    const currentDateStr = new Date().toLocaleDateString('en-US', options);
+
+                    const updates = {};
+                    let importedRowsCount = 0;
+
+                    for (let r = 1; r < rows.length; r++) {
+                        const row = rows[r];
+                        if (!row || row.length === 0) continue;
+
+                        const hasValues = row.some(val => val !== undefined && val !== null && String(val).trim() !== '');
+                        if (!hasValues) continue;
+
+                        const rrNo = getCellValue(row, headerMap["rrNo"] !== undefined ? headerMap["rrNo"] : 1, "GDCL" + (10 + r) + "A");
+                        const conId = getCellValue(row, headerMap["conId"] !== undefined ? headerMap["conId"] : 0, (900000.00 + (r * 2431.15)).toFixed(2));
+                        const customerName = getCellValue(row, headerMap["customerName"] !== undefined ? headerMap["customerName"] : 2, "Customer Name " + r);
+                        const tcAreaName = getCellValue(row, headerMap["tcAreaName"] !== undefined ? headerMap["tcAreaName"] : 3, "Area " + r);
+                        const mrGvpName = getCellValue(row, headerMap["mrGvpName"] !== undefined ? headerMap["mrGvpName"] : 4, "Officer " + r);
+                        const tariff = getCellValue(row, headerMap["tariff"] !== undefined ? headerMap["tariff"] : 5, "LT-1");
+                        const phoneNo = getCellValue(row, headerMap["phoneNo"] !== undefined ? headerMap["phoneNo"] : 6, "9,686,098,546.00");
+                        const status = getCellValue(row, headerMap["status"] !== undefined ? headerMap["status"] : 7, "Live");
+                        const serviceDate = getCellValue(row, headerMap["serviceDate"] !== undefined ? headerMap["serviceDate"] : 8, "6/12/1984");
+                        const onlinePayUrl = getCellValue(row, headerMap["onlinePayUrl"] !== undefined ? headerMap["onlinePayUrl"] : 9, "https://hescomrural.nsoft.in/OnlinePay.aspx");
+
+                        const recordId = database.ref('sheet_data/' + newSheetId).push().key;
+
+                        updates['sheet_data/' + newSheetId + '/' + recordId] = {
+                            rrNo: rrNo,
+                            conId: conId,
+                            customerName: customerName,
+                            tcAreaName: tcAreaName,
+                            mrGvpName: mrGvpName,
+                            tariff: tariff,
+                            phoneNo: phoneNo,
+                            status: status,
+                            serviceDate: serviceDate,
+                            onlinePayUrl: onlinePayUrl
+                        };
+                        importedRowsCount++;
+                    }
+
+                    // Add sheets project metadata
+                    updates['sheets/' + newSheetId] = {
+                        id: newSheetId,
+                        title: sheetTitle,
+                        importedDate: currentDateStr,
+                        colsCount: Math.max(Object.keys(headerMap).length, 10),
+                        rowsCount: importedRowsCount,
+                        timestamp: Date.now()
+                    };
+
+                    updateProgress(90, "Uploading data to Firebase...");
+
+                    // Write payload
+                    database.ref().update(updates)
+                        .then(() => {
+                            updateProgress(100, "Import completed successfully!");
+                            setTimeout(() => {
+                                alert("Success! Imported " + importedRowsCount + " entries.");
+                                resetImportForm();
+                            }, 500);
+                        })
+                        .catch(err => {
+                            throw new Error("Firebase write failed: " + err.message);
+                        });
+
+                } catch (err) {
+                    alert("Import Error: " + err.message);
+                    resetImportForm();
+                }
+            };
+            
+            reader.onerror = function() {
+                alert("Could not read Excel file.");
+                resetImportForm();
+            };
+
+            reader.readAsArrayBuffer(selectedFile);
+        }
+
+        function formatCellDate(val) {
+            if (val instanceof Date) {
+                const dd = String(val.getDate()).padStart(2, '0');
+                const mm = String(val.getMonth() + 1).padStart(2, '0');
+                const yyyy = val.getFullYear();
+                return dd + '/' + mm + '/' + yyyy;
+            }
+            return String(val || '');
+        }
+
+        function getCellValue(row, colIndex, fallback) {
+            const val = row[colIndex];
+            if (val === undefined || val === null || String(val).trim() === '') {
+                return fallback;
+            }
+            if (val instanceof Date) {
+                return formatCellDate(val);
+            }
+            return String(val).trim();
+        }
+
+        function updateProgress(percentage, status) {
+            document.getElementById('progressBar').style.width = percentage + "%";
+            document.getElementById('progressPercentage').innerText = percentage + "%";
+            document.getElementById('progressStatus').innerText = status;
+        }
+
+        function resetImportForm() {
+            document.getElementById('importBtn').disabled = false;
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('sheetTitleInput').value = '';
+            clearFileSelection();
+        }
+
+        // Read and sync sheets from Realtime Database
+        function syncSheetsList() {
+            const sheetsRef = database.ref('sheets');
+            sheetsRef.on('value', snapshot => {
+                const listContainer = document.getElementById('sheetsList');
+                listContainer.innerHTML = '';
+                
+                const sheets = [];
+                snapshot.forEach(child => {
+                    sheets.push(child.val());
+                });
+
+                if (sheets.length === 0) {
+                    listContainer.innerHTML = `
+                        <div style="text-align: center; color: var(--text-secondary); padding: 40px 0;">
+                            <i class="fa-solid fa-folder-open" style="font-size: 24px; margin-bottom: 12px; opacity: 0.5;"></i>
+                            <p>No spreadsheets in database yet.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Sort by timestamp descending
+                sheets.sort((a, b) => b.timestamp - a.timestamp);
+
+                sheets.forEach(sheet => {
+                    const div = document.createElement('div');
+                    div.className = 'sheet-item';
+                    div.innerHTML = `
+                        <div class="sheet-info">
+                            <h4>${sheet.title}</h4>
+                            <div class="sheet-meta">
+                                <span><i class="fa-solid fa-calendar-day" style="margin-right: 4px;"></i>${sheet.importedDate}</span>
+                                <span><i class="fa-solid fa-list-ol" style="margin-right: 4px;"></i>${sheet.rowsCount} entries</span>
+                            </div>
+                        </div>
+                        <button class="sheet-delete-btn" onclick="deleteSheet('${sheet.id}', '${sheet.title}')" title="Delete sheet and all data">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    `;
+                    listContainer.appendChild(div);
+                });
+            });
+        }
+
+        // Delete spreadsheet metadata and associated rows
+        function deleteSheet(sheetId, title) {
+            if (confirm("Are you sure you want to permanently delete '" + title + "' and all of its records? This cannot be undone.")) {
+                const updates = {};
+                updates['sheets/' + sheetId] = null;
+                updates['sheet_data/' + sheetId] = null;
+
+                database.ref().update(updates)
+                    .then(() => {
+                        alert("Sheet '" + title + "' deleted successfully.");
+                    })
+                    .catch(err => {
+                        alert("Delete failed: " + err.message);
+                    });
+            }
+        }
+    </script>
+</body>
+</html>
